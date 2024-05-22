@@ -19,7 +19,8 @@ const userController = {
 
             if(user) return res.json({ message: "User accout already exists, please login" });
             const response = await User.create(req.body);
-            res.status(201).json({ message: "User account created successfully", data: response });
+            const token = await generateToken(res, response._id);
+            res.status(201).json({ message: "User account created successfully", data: response, token });
         } catch (error) {
             res.status(500).json({ message: "Internal Server Error", error });
         }
