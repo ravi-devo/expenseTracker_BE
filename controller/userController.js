@@ -7,16 +7,17 @@ const userController = {
         const user = await User.findOne({ email });
 
         if(!user) return res.status(404).json({ message: "User account not found, please register your account" });
-        if(user && user.matchPassword(password)){
+        if(user && await user.matchPassword(password)){
             const token = await generateToken(res, user._id);
             res.status(200).json({ message: "User authenticated successfully", data: user, token });
+        }else{
+            res.status(401).json({message: "Invalid credentials"})
         }
     },
     register: async (req, res) => {
         try {
             const { email } = req.body;
             const user = await User.findOne({ email });
-
             if(user) return res.json({ message: "User accout already exists, please login" });
             const response = await User.create(req.body);
             const token = await generateToken(res, response._id);
